@@ -1,0 +1,8 @@
+frame_id,check,layer,value,how_detected
+000000,invalid_points,I/O,"23/23953 điểm (0.10%) có NaN/Inf ở cột x,y,z","np.isfinite trên từng dòng; nếu không lọc, phép chiếu sinh NaN và metric sai"
+000001,invalid_points,I/O,"23/23781 điểm (0.10%) có NaN/Inf ở cột x,y,z","np.isfinite trên từng dòng; nếu không lọc, phép chiếu sinh NaN và metric sai"
+000002,invalid_points,I/O,"23/23790 điểm (0.10%) có NaN/Inf ở cột x,y,z","np.isfinite trên từng dòng; nếu không lọc, phép chiếu sinh NaN và metric sai"
+000003,invalid_points,I/O,"22/22063 điểm (0.10%) có NaN/Inf ở cột x,y,z","np.isfinite trên từng dòng; nếu không lọc, phép chiếu sinh NaN và metric sai"
+000004,invalid_points,I/O,"23/23760 điểm (0.10%) có NaN/Inf ở cột x,y,z","np.isfinite trên từng dòng; nếu không lọc, phép chiếu sinh NaN và metric sai"
+000003,sector_dropout,I/O,azimuth -40..-5 độ chỉ còn 30% số điểm so với trung vị các frame; tổng điểm 22041 so với trung vị 23758,"histogram azimuth 5 độ/bin, so từng bin với trung vị của mọi frame"
+000002->000003,time_gap,Time,"dt = 0.200 s, gấp 2.0 lần chu kỳ trung vị 0.100 s (mất 1 frame hoặc timestamp sai)",np.diff(timestamps.txt) so với trung vị

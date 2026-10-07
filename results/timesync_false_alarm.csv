@@ -1,0 +1,3 @@
+score,window_frames,threshold,mean_ego_comp,mean_no_ego_comp,false_drift_alarm_pct,inbox_pct_no_ego_comp_near_0_15m,inbox_pct_no_ego_comp_mid_15_30m,inbox_pct_no_ego_comp_far_30m_plus
+inbox_ratio,10,99.8505,99.96,96.67,100.0,96.48,98.98,100.0
+edge_margin,10,0.0042,0.0138,0.0099,9.95,96.48,98.98,100.0

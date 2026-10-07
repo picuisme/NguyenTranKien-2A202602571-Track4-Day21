@@ -1,0 +1,7 @@
+dataset,frame_id,n_points,step,repeats,p50_ms,p95_ms,cpu,python
+nuscenes_mini_subset,scene-0103_000,34752,project_all_points,30,3.38,5.664,x86_64,3.10.12
+nuscenes_mini_subset,scene-0103_000,34752,inbox_ratio (cần label),30,0.563,0.982,x86_64,3.10.12
+nuscenes_mini_subset,scene-0103_000,34752,edge: depth_edge_weights,30,3.73,4.942,x86_64,3.10.12
+nuscenes_mini_subset,scene-0103_000,34752,edge: image_edge_map (Canny + distance transform),30,15.838,18.587,x86_64,3.10.12
+nuscenes_mini_subset,scene-0103_000,34752,edge: 1 lần chấm score,30,0.203,0.334,x86_64,3.10.12
+nuscenes_mini_subset,scene-0103_000,34752,edge_margin đầy đủ (7 lần chấm),30,3.33,4.914,x86_64,3.10.12
