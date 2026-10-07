@@ -14,6 +14,7 @@ Mọi phép ngẫu nhiên (bootstrap ở lệnh detect) đều cố định seed
 from __future__ import annotations
 
 import argparse
+import sys
 import platform
 import time
 from pathlib import Path
@@ -156,9 +157,9 @@ def cmd_sweep(args) -> None:
     per_frame = pd.DataFrame(rows)
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    per_frame.round(5).to_csv(out / f"calib_perturb_per_frame_{name}.csv", index=False)
+    per_frame.round(5).to_csv(out / f"calib_perturb_per_frame_{name}.csv", index=False, lineterminator="\n")
     agg = aggregate(per_frame)
-    agg.to_csv(out / f"calib_perturb_sweep_{name}.csv", index=False)
+    agg.to_csv(out / f"calib_perturb_sweep_{name}.csv", index=False, lineterminator="\n")
     print(agg[["axis", "vehicle_axis", "level", "unit", "pixel_shift_px", "fov_ratio_pct", "inbox_pct_all", "inbox_pct_near_0_15m",
                "inbox_pct_mid_15_30m", "inbox_pct_far_30m_plus", "edge_score_mean", "edge_margin_mean"]].to_string(index=False))
     plot_sweep(agg, name, out / "figures")
@@ -223,7 +224,7 @@ def cmd_detect(args) -> None:
                              "detect_rate_pct": rate})
     res = pd.DataFrame(rows).round(4)
     out.mkdir(parents=True, exist_ok=True)
-    res.to_csv(out / "drift_detection.csv", index=False)
+    res.to_csv(out / "drift_detection.csv", index=False, lineterminator="\n")
     table = res.pivot_table(index=["dataset", "axis", "vehicle_axis", "level"], columns="score", values="detect_rate_pct", sort=False)
     print(table.to_string())
     plot_detect(res, out / "figures")
@@ -293,7 +294,7 @@ def cmd_timesync(args) -> None:
     df = pd.DataFrame(rows).round(4)
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    df.to_csv(out / "timesync_nuscenes.csv", index=False)
+    df.to_csv(out / "timesync_nuscenes.csv", index=False, lineterminator="\n")
     print(df.groupby("scene")[["dt_cam_minus_lidar_ms", "pixel_shift_px", "inbox_pct_ego_comp", "inbox_pct_no_ego_comp",
                                "edge_margin_ego_comp", "edge_margin_no_ego_comp"]].mean().round(3).to_string())
     # Cùng bộ giám sát như lệnh detect: nếu chỉ bỏ bù chuyển động (calib vẫn đúng) thì có bị báo "drift" không?
@@ -308,7 +309,7 @@ def cmd_timesync(args) -> None:
     alarm = pd.DataFrame(alarm).round(4)
     for name, _, _ in DIST_BINS:                              # % điểm còn trong box khi bỏ bù, theo khoảng cách
         alarm[f"inbox_pct_no_ego_comp_{name}"] = round(100 * df[f"noego_in_{name}"].sum() / df[f"noego_total_{name}"].sum(), 2)
-    alarm.to_csv(out / "timesync_false_alarm.csv", index=False)
+    alarm.to_csv(out / "timesync_false_alarm.csv", index=False, lineterminator="\n")
     print(alarm.to_string(index=False))
     worst = df.sort_values("pixel_shift_px", ascending=False).head(3)
     print("3 frame lệch nhiều nhất khi bỏ bù chuyển động:\n", worst[["frame_id", "dt_cam_minus_lidar_ms", "pixel_shift_px",
@@ -343,7 +344,7 @@ def cmd_latency(args) -> None:
     df = pd.DataFrame(rows).round(3)
     out = Path(args.out_dir) / f"latency_{Path(args.data_root).name}.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(out, index=False)
+    df.to_csv(out, index=False, lineterminator="\n")
     print(df[["step", "p50_ms", "p95_ms"]].to_string(index=False), f"\n-> {out}")
 
 
@@ -366,6 +367,7 @@ def cmd_all(args) -> None:
 
 
 def main() -> None:
+    sys.stdout.reconfigure(encoding="utf-8")   # để in tiếng Việt được trên console Windows
     ap = argparse.ArgumentParser(prog="python -m src.calib_qa", description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)

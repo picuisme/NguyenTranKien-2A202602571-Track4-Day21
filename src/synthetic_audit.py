@@ -9,6 +9,7 @@ Kết quả: results/synthetic_audit.csv (mỗi dòng là một cờ cảnh báo
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -62,6 +63,7 @@ def audit(data_root: str, nan_thr: float, sector_ratio_thr: float, dt_ratio_thr:
 
 
 def main() -> None:
+    sys.stdout.reconfigure(encoding="utf-8")   # để in tiếng Việt được trên console Windows
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--data-root", default="data/synthetic", help="thư mục định dạng KITTI")
     ap.add_argument("--out-dir", default="results")
@@ -73,7 +75,7 @@ def main() -> None:
     flags, extra = audit(args.data_root, args.nan_thr, args.sector_ratio_thr, args.dt_ratio_thr)
     out = Path(args.out_dir)
     (out / "figures").mkdir(parents=True, exist_ok=True)
-    flags.to_csv(out / "synthetic_audit.csv", index=False)
+    flags.to_csv(out / "synthetic_audit.csv", index=False, lineterminator="\n")
     print(flags.to_string(index=False) if len(flags) else "Không có cờ nào.")
 
     fig, axs = plt.subplots(1, 2, figsize=(14, 4))

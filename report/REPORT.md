@@ -12,7 +12,7 @@
 
 Trên kitti_mini (20 frame, 107 vật có ≥ 10 điểm LiDAR), **lệch yaw 1° làm vật ở xa (≥ 30 m) mất 29 điểm phần trăm số điểm LiDAR nằm trong 2D box của nó (99.7% → 70.6%), trong khi vật gần (< 15 m) chỉ mất 3.8 điểm phần trăm (99.6% → 95.8%)**. Một bộ giám sát nhìn 10 frame, báo động giả 1%, phát hiện được lệch yaw và pitch từ 0.5° (in-box ratio: 99–100% số cửa sổ; edge-margin không cần label: 96% với yaw). Nhưng cả hai score **không phát hiện được lệch roll ≤ 1° và dịch dọc trục tiến tới 20 cm**.
 
-Claim nháp ở CP1 ("yaw 1° làm vật xa mất hơn 10%, vật gần mất dưới 5%") được số liệu xác nhận. Phần về roll và dịch dọc là điều tôi không lường trước.
+Claim nháp ở CP1 ("yaw 1° làm vật xa mất hơn 10%, vật gần mất dưới 5%") được số liệu xác nhận. Phần về roll và dịch dọc không có trong claim nháp, được bổ sung sau thí nghiệm ở CP3.
 
 ## 2. Evidence
 

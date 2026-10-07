@@ -9,6 +9,7 @@ Chạy SAU `python -m src.calib_qa all`, vì tiêu đề ảnh failure đọc t�
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 import cv2
@@ -129,6 +130,7 @@ def fail_time(args, out: Path) -> None:
 
 
 def main() -> None:
+    sys.stdout.reconfigure(encoding="utf-8")   # để in tiếng Việt được trên console Windows
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--only", choices=["demo", "fail_01", "fail_02"], help="chỉ vẽ một ảnh (mặc định vẽ cả 3)")
     ap.add_argument("--data-root", default="data/kitti_mini", help="dataset KITTI cho ảnh demo và failure 1")
