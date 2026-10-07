@@ -33,20 +33,28 @@ Claim nháp ở CP1 ("yaw 1° làm vật xa mất hơn 10%, vật gần mất d�
 
 Ảnh overlay ở 3 khoảng cách (calib gốc): [gần](../results/figures/overlay_000011_near_0_15m.png), [giữa](../results/figures/overlay_000011_mid_15_30m.png), [xa](../results/figures/overlay_000011_far_30m_plus.png). Cùng 3 ảnh khi lệch yaw 1° có đuôi `_y1.0_` trong `results/figures/`.
 
-**So sánh 2 score trên cùng dữ liệu** (mức lệch nhỏ nhất bị phát hiện ở ≥ 90% số cửa sổ 10 frame; ngưỡng là phân vị 1% khi calib đúng: in-box < 97.6%, edge-margin < 0.018 trên KITTI). Hình: `results/figures/score_vs_perturb.png`, `results/figures/detect_rate_vs_perturb.png`.
+**[B1] So sánh 2 score trên cùng dữ liệu** (mức lệch nhỏ nhất bị phát hiện ở ≥ 90% số cửa sổ 10 frame; ngưỡng là phân vị 1% khi calib đúng: in-box < 97.6%, edge-margin < 0.018 trên KITTI). Hình: `results/figures/score_vs_perturb.png`, `results/figures/detect_rate_vs_perturb.png`.
 
 | Score | yaw | pitch | roll | dịch ngang | dịch cao | dịch dọc (tiến) | Ưu điểm | Nhược điểm |
 |---|---|---|---|---|---|---|---|---|
-| In-box ratio (KITTI) | 0.5° | 0.5° | 2° | 20 cm | 20 cm | không (1% ở 20 cm) | nhạy, rẻ (p50 3.8 ms) | cần 2D box và điểm của từng vật |
-| Edge-margin (KITTI) | 0.5° | 1° | 2° | 20 cm | không đạt 90% (89% ở 20 cm) | không (6% ở 20 cm) | không cần label | kém nhạy hơn, tốn hơn (p50 khoảng 23 ms cho 3 bước) |
+| In-box ratio (KITTI) | 0.5° | 0.5° | 2° | 20 cm | 20 cm | không (1% ở 20 cm) | nhạy, rẻ (p50 7.1 ms) | cần 2D box và điểm của từng vật |
+| Edge-margin (KITTI) | 0.5° | 1° | 2° | 20 cm | không đạt 90% (89% ở 20 cm) | không (6% ở 20 cm) | không cần label | kém nhạy hơn, tốn hơn (p50 khoảng 36 ms cho 3 bước) |
 | In-box ratio (nuScenes) | 0.25° | 1° | 2° | 5 cm | 20 cm | không (16% ở 20 cm) | như trên | 2D box ở đây suy từ 3D box nên ngưỡng 99.85% là lạc quan |
 | Edge-margin (nuScenes) | chỉ 1° (92%), tụt còn 60% ở 2–3° | không | không | không | không | không | như trên | LiDAR 32 beam cho quá ít điểm mép |
 
-**Hai dataset** (`results/calib_perturb_sweep_nuscenes_mini_subset.csv`): cùng lệch yaw 1°, nuScenes dịch 26.0 px (tiêu cự 1266 px) so với 15.5 px của KITTI (721 px), nhưng vật xa chỉ tụt còn 93.3% thay vì 70.6%. Nguyên nhân: 2D box của nuScenes là hình chiếu của 3D box nên rộng hơn box vẽ sát của KITTI, và ảnh 1600×900 làm vật to hơn tính theo pixel. Edge-margin yếu hẳn trên nuScenes vì 32 beam chỉ cho khoảng 35 nghìn điểm mỗi frame (KITTI khoảng 120 nghìn). Trục LiDAR hai bên đặt khác nhau, nên cột `vehicle_axis` trong CSV quy mọi tham số về trục của xe trước khi so sánh.
+**[B5] Hai dataset** (`results/calib_perturb_sweep_nuscenes_mini_subset.csv`): cùng lệch yaw 1°, nuScenes dịch 26.0 px (tiêu cự 1266 px) so với 15.5 px của KITTI (721 px), nhưng vật xa chỉ tụt còn 93.3% thay vì 70.6%. Nguyên nhân: 2D box của nuScenes là hình chiếu của 3D box nên rộng hơn box vẽ sát của KITTI, và ảnh 1600×900 làm vật to hơn tính theo pixel. Edge-margin yếu hẳn trên nuScenes vì 32 beam chỉ cho khoảng 35 nghìn điểm mỗi frame (KITTI khoảng 120 nghìn). Trục LiDAR hai bên đặt khác nhau, nên cột `vehicle_axis` trong CSV quy mọi tham số về trục của xe trước khi so sánh.
 
-**Latency** (`results/latency_*.csv`; Intel Core i7-12650H, máy ảo Linux 2 nhân, không GPU; bỏ lần chạy đầu, 30 lần lặp; frame KITTI 000001, 120 nghìn điểm): chiếu toàn bộ điểm p50 17.4 ms / p95 19.6 ms; in-box 3.8 / 5.4 ms; edge-margin gồm tìm mép độ sâu 8.4 / 10.9 ms, Canny 5.5 / 6.4 ms, 7 lần chấm 9.4 / 11.1 ms.
+**[B3] Latency** (`results/latency_*.csv` là bảng p50/p95, `results/latency_runs_*.csv` mỗi dòng một lần chạy). Phần cứng: CPU Intel Core i7-12650H, chạy trong máy ảo Linux được cấp 2 nhân và 4 GB RAM, không dùng GPU. Bỏ lần chạy đầu, 30 lần lặp, frame KITTI 000001 (120 nghìn điểm): chiếu toàn bộ điểm p50 27.2 ms / p95 46.9 ms; in-box 7.1 / 11.0 ms; edge-margin gồm tìm mép độ sâu 12.3 / 13.4 ms, Canny 7.4 / 8.4 ms, 7 lần chấm 16.3 / 22.3 ms.
 
-**Lỗi cài sẵn trong data/synthetic** (`results/synthetic_audit.csv`, `results/figures/synthetic_audit.png`). Tôi tìm được 3 lỗi dưới đây và không khẳng định đã hết:
+**[B2] Stress test suy giảm dữ liệu** (`results/degradation_stress.csv`, `results/figures/degradation_stress.png`): làm xấu point cloud KITTI bằng `starter/perturb.py` rồi đo tỉ lệ phát hiện lệch yaw 0.5°. In-box gần như không bị ảnh hưởng (95–100% ở mọi mức). Edge-margin chịu được bỏ ngẫu nhiên tới 70% số điểm (97%), nhưng gãy khi nhiễu 10 cm (24%) và khi chỉ còn 1/4 số beam (53%).
+
+| Loại suy giảm | Mức | In-box phát hiện yaw 0.5° | Edge-margin phát hiện yaw 0.5° |
+|---|---|---|---|
+| Bỏ điểm ngẫu nhiên (giữ lại) | 100% / 70% / 50% / 30% | 99% / 100% / 99% / 95% | 96% / 93% / 98% / 97% |
+| Nhiễu Gauss xyz | 0 / 2 / 5 / 10 cm | 99% / 100% / 99% / 98% | 96% / 100% / 94% / 24% |
+| Bớt beam (giữ 1 trong N) | 1 / 2 / 4 | 99% / 99% / 99% | 96% / 100% / 53% |
+
+**[B6] Lỗi cài sẵn trong data/synthetic** (`results/synthetic_audit.csv`, `results/figures/synthetic_audit.png`). Tôi tìm được 3 lỗi dưới đây và không khẳng định đã hết:
 
 | Lỗi | Frame | Cách phát hiện |
 |---|---|---|
@@ -70,31 +78,32 @@ Ngoài ra, edge-margin trên nuScenes gần như không dùng được (bảng �
 
 Use-case: giám sát calibration online cho xe ADAS sau va chạm nhẹ hoặc khi giá đỡ sensor bị xô lệch. Trả lời câu hỏi của topic: lệch 1° theo yaw hoặc pitch thì hệ thống tự phát hiện được trong 10 frame, và nhìn rõ nhất ở vật từ 30 m trở ra. Lệch 1° theo roll thì chưa.
 
-- **Đánh đổi:** in-box nhạy và rẻ nhưng cần detector 2D và ghép điểm với vật, tức phụ thuộc model. Edge-margin không cần label nhưng tốn khoảng 23 ms mỗi frame trên CPU và cần LiDAR dày (64 beam). Đề xuất chạy edge-margin ở 1 Hz làm lớp kiểm tra độc lập, dùng in-box khi đã có detector.
+- **Đánh đổi:** in-box nhạy và rẻ nhưng cần detector 2D và ghép điểm với vật, tức phụ thuộc model. Edge-margin không cần label nhưng tốn khoảng 36 ms mỗi frame trên CPU, cần LiDAR dày (64 beam) và gãy khi nhiễu khoảng cách lên 10 cm. Đề xuất chạy edge-margin ở 1 Hz làm lớp kiểm tra độc lập, dùng in-box khi đã có detector.
 - **An toàn:** ngưỡng chặt cho ít báo động giả nhưng bắt chậm. Khi có báo động nên hạ mức tin cậy của fusion ở vùng xa trước, vì vật xa bị ảnh hưởng sớm nhất.
 - **Chỉ số cần log:** trung bình cửa sổ của hai score, in-box tách theo gần và xa, độ lệch timestamp camera-LiDAR, tốc độ xe, số điểm mép độ sâu mỗi frame, số frame không đủ điểm để chấm.
 - **Bước tiếp theo:** thêm score có trọng số theo khoảng cách tới tâm ảnh để bắt roll, và kiểm tra ngưỡng trên log có drift thật, vì ngưỡng hiện tại rút từ 20 và 80 frame.
 
 ## 5. Cách chạy lại
 
-Các lệnh tái tạo lại toàn bộ kết quả từ repo sạch (chạy từ thư mục gốc, khoảng 2 phút trên CPU).
+Các lệnh tái tạo lại toàn bộ kết quả từ repo sạch (chạy từ thư mục gốc, khoảng 4 phút trên CPU).
 
 ```bash
 pip install -r requirements.txt
 python -m starter.data_health --data-root data/synthetic
+python -m src.test_projection       # tự kiểm tra 2 hàm TODO bằng số
 python -m starter.projection --data-root data/synthetic --frame 000000
 python -m starter.projection --data-root data/kitti_mini --frame 000011
 python -m starter.projection --data-root data/nuscenes_mini_subset --frame scene-0103_010
-python -m src.calib_qa all          # overlay 3 khoảng cách, sweep 2 dataset, detect, latency, timesync
+python -m src.calib_qa all          # overlay 3 khoảng cách, sweep 2 dataset, detect, latency, timesync, degrade
 python -m src.synthetic_audit       # rà lỗi cài sẵn trong data/synthetic
 python -m src.make_figures          # ảnh demo gần/xa và 2 ảnh fail_*
 python tools/check_submission.py
 ```
 
-Công cụ dùng lại được: `python -m src.calib_qa --help` liệt kê 6 lệnh con (`overlay`, `sweep`, `detect`, `timesync`, `latency`, `all`), mỗi lệnh nhận `--data-root` và có `--help` riêng. Bootstrap cố định seed 0; chạy lại hai lần cho các file CSV giống nhau từng byte, trừ `latency_*.csv` vì thời gian chạy phụ thuộc máy.
+**[B4] Công cụ dùng lại được:** `python -m src.calib_qa --help` liệt kê 7 lệnh con (`overlay`, `sweep`, `detect`, `timesync`, `latency`, `degrade`, `all`), mỗi lệnh nhận `--data-root` và có `--help` riêng. Bootstrap cố định seed 0; chạy lại hai lần cho các file CSV giống nhau từng byte, trừ các file `latency_*` vì thời gian chạy phụ thuộc máy.
 
 ## 6. Khai báo sử dụng AI
 
 | Công cụ | Dùng cho việc gì | Bạn đã kiểm chứng thế nào |
 |---|---|---|
-| Claude (Anthropic), chạy dạng agent trên máy tôi | Đọc đề; viết 2 hàm `velo_to_cam`, `cam_to_image`; viết toàn bộ code trong `src/`; chạy thí nghiệm; vẽ hình; soạn bản nháp báo cáo này | Test tay ở CP2: điểm LiDAR (10, 0, 0) của synthetic 000000 ra z_cam = 9.73 và pixel (614, 175), đúng giá trị trong CHECKPOINTS.md. Xem ảnh overlay: điểm nằm trên xe, người, mặt đường, không có điểm trên trời. Chạy lại script hai lần, so md5 các file CSV. Mọi con số trong báo cáo lấy từ CSV trong `results/`, không gõ tay |
+| Claude (Anthropic), chạy dạng agent trên máy tôi | Đọc đề; viết 2 hàm `velo_to_cam`, `cam_to_image`; viết toàn bộ code trong `src/`; chạy thí nghiệm; vẽ hình; soạn bản nháp báo cáo này | `python -m src.test_projection`: điểm LiDAR (10, 0, 0) của synthetic 000000 ra z_cam = 9.73 và pixel (614, 175), và 3 lệnh overlay ra đúng 3910 / 19946 / 3120 điểm trong ảnh như hướng dẫn. Xem ảnh overlay: điểm nằm trên xe, người, mặt đường, không có điểm trên trời. Chạy lại script hai lần, so md5 các file CSV. Mọi con số trong báo cáo lấy từ CSV trong `results/`, không gõ tay |

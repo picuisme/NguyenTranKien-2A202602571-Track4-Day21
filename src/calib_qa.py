@@ -7,6 +7,7 @@ Chạy từ thư mục gốc repo:
     python -m src.calib_qa detect   --per-frame results/calib_perturb_per_frame_kitti_mini.csv
     python -m src.calib_qa timesync --data-root data/nuscenes_mini_subset
     python -m src.calib_qa latency  --data-root data/kitti_mini
+    python -m src.calib_qa degrade  --data-root data/kitti_mini
     python -m src.calib_qa all      # chạy lại toàn bộ kết quả trong báo cáo
 
 Mọi phép ngẫu nhiên (bootstrap ở lệnh detect) đều cố định seed, nên chạy lại ra đúng cùng số liệu.
@@ -75,9 +76,14 @@ def edge_margin(fr, calib, edge_w, edge_map) -> tuple[float, float]:
     return s, float(s - np.nanmean(nb))
 
 
-def frame_rows(data_root: str, frame_id: str, configs: list[tuple[str, float]], **load_kwargs) -> list[dict]:
-    """Đo mọi metric của một frame cho từng cấu hình (axis, level)."""
+def frame_rows(data_root: str, frame_id: str, configs: list[tuple[str, float]], degrade=None, **load_kwargs) -> list[dict]:
+    """Đo mọi metric của một frame cho từng cấu hình (axis, level).
+
+    degrade: hàm nhận mảng (N, 5) [x, y, z, intensity, ring] và trả về mảng đã làm xấu (dùng cho lệnh degrade)."""
     fr = load_frame_with_ring(data_root, frame_id, **load_kwargs)
+    if degrade is not None:
+        both = degrade(np.hstack([fr["points"], fr["ring"][:, None].astype(np.float32)]))
+        fr["points"], fr["ring"] = both[:, :4], both[:, 4].astype(np.int32)
     objs = object_point_sets(fr)
     edge_w = depth_edge_weights(fr["points"], fr["ring"])
     edge_map = image_edge_map(fr["image"])
@@ -177,6 +183,7 @@ def plot_sweep(agg: pd.DataFrame, name: str, fig_dir: Path) -> None:
             ax.plot(x, [base[col]] + list(g[col]), style, label=label)
         ax.set_title(f"tham số {axis} = {g['vehicle_axis'].iloc[0]} của xe")
         ax.set_xlabel(f"mức lệch ({g['unit'].iloc[0]})")
+        ax.set_ylim(0, 105)
         ax.grid(alpha=0.3)
     for ax in axs[:, 0]:
         ax.set_ylabel("% điểm của vật còn nằm trong 2D box")
@@ -330,22 +337,97 @@ def cmd_latency(args) -> None:
         "edge: 1 lần chấm score": lambda: edge_alignment_score(fr, fr["calib"], ew, em),
         "edge_margin đầy đủ (7 lần chấm)": lambda: edge_margin(fr, fr["calib"], ew, em),
     }
-    rows = []
+    rows, runs = [], []
+    cpu, ram_gb = hardware_info()
     for name, fn in steps.items():
         fn()                                                  # lần đầu: khởi tạo, không tính
         t = []
-        for _ in range(args.repeats):
+        for i in range(args.repeats):
             t0 = time.perf_counter()
             fn()
             t.append((time.perf_counter() - t0) * 1000)
+            runs.append({"step": name, "run": i + 1, "ms": t[-1]})
         rows.append({"dataset": Path(args.data_root).name, "frame_id": fr["frame_id"], "n_points": len(fr["points"]),
                      "step": name, "repeats": args.repeats, "p50_ms": np.percentile(t, 50), "p95_ms": np.percentile(t, 95),
-                     "cpu": platform.processor() or platform.machine(), "python": platform.python_version()})
+                     "cpu": cpu, "ram_gb": ram_gb, "gpu": "không dùng", "python": platform.python_version()})
     df = pd.DataFrame(rows).round(3)
-    out = Path(args.out_dir) / f"latency_{Path(args.data_root).name}.csv"
+    name = Path(args.data_root).name
+    out = Path(args.out_dir) / f"latency_{name}.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out, index=False, lineterminator="\n")
-    print(df[["step", "p50_ms", "p95_ms"]].to_string(index=False), f"\n-> {out}")
+    pd.DataFrame(runs).round(3).to_csv(Path(args.out_dir) / f"latency_runs_{name}.csv", index=False, lineterminator="\n")
+    print(df[["step", "p50_ms", "p95_ms"]].to_string(index=False), f"\nCPU: {cpu}, RAM: {ram_gb} GB -> {out}")
+
+
+def hardware_info() -> tuple[str, float]:
+    """(tên CPU, RAM tính bằng GB). Đọc /proc trên Linux; hệ điều hành khác thì lấy được gì ghi nấy."""
+    cpu, ram = platform.processor() or platform.machine(), float("nan")
+    try:
+        for line in Path("/proc/cpuinfo").read_text().splitlines():
+            if line.startswith("model name"):
+                cpu = line.split(":", 1)[1].strip()
+                break
+        for line in Path("/proc/meminfo").read_text().splitlines():
+            if line.startswith("MemTotal"):
+                ram = round(int(line.split()[1]) / 1e6, 1)
+                break
+    except OSError:
+        pass
+    return cpu, ram
+
+
+# ------------------------------------------------------------------------------- degrade
+def cmd_degrade(args) -> None:
+    """Stress test: làm xấu point cloud (bỏ điểm ngẫu nhiên, nhiễu Gauss, bớt beam) rồi xem pipeline QA còn bắt được
+    lệch yaw `--yaw-deg` không. Mỗi lần chỉ đổi một loại suy giảm ở một mức; seed cố định."""
+    from starter import perturb
+
+    kinds = {
+        "random_dropout": ("keep_ratio", [1.0, 0.7, 0.5, 0.3], lambda p, v: p if v >= 1.0 else perturb.random_dropout(p, v, seed=SEED)),
+        "gaussian_noise": ("sigma_xyz_m", [0.0, 0.02, 0.05, 0.10], lambda p, v: p if v == 0 else perturb.gaussian_noise(p, v, seed=SEED)),
+        "beam_dropout": ("keep_every", [1, 2, 4], lambda p, v: p if v == 1 else perturb.beam_dropout(p, keep_every=int(v))),
+    }
+    frames = list_frames(args.data_root)[:: args.every]
+    configs = [("none", 0.0), ("yaw", args.yaw_deg)]
+    out_rows = []
+    for kind, (param, levels, fn) in kinds.items():
+        for lv in levels:
+            df = pd.DataFrame([r for fid in frames for r in frame_rows(args.data_root, fid, configs, degrade=lambda p: fn(p, lv))])
+            df["inbox_ratio"] = df["inbox_in_all"] / df["inbox_total_all"].replace(0, np.nan)
+            clean, bad = df[df["axis"] == "none"].set_index("frame_id"), df[df["axis"] == "yaw"].set_index("frame_id")
+            row = {"dataset": Path(args.data_root).name, "degradation": kind, "param": param, "level": lv, "yaw_deg": args.yaw_deg,
+                   "n_frames": len(frames), "n_objects_ge10pts": int(clean["n_objects"].sum()),
+                   "points_on_objects": int(clean["inbox_total_all"].sum()),
+                   "inbox_pct_clean": 100 * clean["inbox_in_all"].sum() / max(clean["inbox_total_all"].sum(), 1),
+                   "inbox_pct_yaw": 100 * bad["inbox_in_all"].sum() / max(bad["inbox_total_all"].sum(), 1),
+                   "edge_margin_clean": clean["edge_margin"].mean(), "edge_margin_yaw": bad["edge_margin"].mean()}
+            for score in ("inbox_ratio", "edge_margin"):
+                ok = clean[score].notna()
+                _, rate = window_detect(clean.loc[ok, score].to_numpy(), bad.loc[ok, score].to_numpy(), args.window, args.n_boot)
+                row[f"detect_yaw_pct_{score}"] = rate
+            out_rows.append(row)
+            print(f"{kind} {param}={lv}: in-box {row['inbox_pct_clean']:.1f}% -> {row['inbox_pct_yaw']:.1f}%, "
+                  f"phát hiện {row['detect_yaw_pct_inbox_ratio']:.0f}% / {row['detect_yaw_pct_edge_margin']:.0f}%", flush=True)
+    res = pd.DataFrame(out_rows).round(4)
+    out = Path(args.out_dir)
+    (out / "figures").mkdir(parents=True, exist_ok=True)
+    res.to_csv(out / "degradation_stress.csv", index=False, lineterminator="\n")
+    fig, axs = plt.subplots(1, len(kinds), figsize=(5 * len(kinds), 4.2), sharey=True)
+    for ax, (kind, (param, _, _)) in zip(axs, kinds.items()):
+        g = res[res["degradation"] == kind]
+        x = range(len(g))
+        ax.plot(x, g["detect_yaw_pct_inbox_ratio"], "o-", color="tab:blue", label="in-box ratio")
+        ax.plot(x, g["detect_yaw_pct_edge_margin"], "s--", color="tab:red", label="edge-margin")
+        ax.set_xticks(list(x), [f"{v:g}" for v in g["level"]])
+        ax.set(xlabel=f"{kind}: {param}", ylim=(0, 105), title=kind)
+        ax.grid(alpha=0.3)
+    axs[0].set_ylabel(f"tỉ lệ phát hiện lệch yaw {args.yaw_deg:g}° (%)")
+    axs[0].legend()
+    fig.suptitle(f"{Path(args.data_root).name}: bộ giám sát còn bắt được lệch yaw {args.yaw_deg:g}° không khi point cloud bị suy giảm?")
+    fig.tight_layout()
+    fig.savefig(out / "figures" / "degradation_stress.png", dpi=110)
+    plt.close(fig)
+    print(f"-> {out / 'degradation_stress.csv'}")
 
 
 # ------------------------------------------------------------------------------- all
@@ -364,6 +446,7 @@ def cmd_all(args) -> None:
                              f"{args.out_dir}/calib_perturb_per_frame_nuscenes_mini_subset.csv"],
                   window=10, n_boot=2000, out_dir=args.out_dir))
     cmd_timesync(ns(data_root="data/nuscenes_mini_subset", every=1, window=10, n_boot=2000, out_dir=args.out_dir))
+    cmd_degrade(ns(data_root="data/kitti_mini", every=1, yaw_deg=0.5, window=10, n_boot=2000, out_dir=args.out_dir))
 
 
 def main() -> None:
@@ -404,6 +487,14 @@ def main() -> None:
     p.add_argument("--window", type=int, default=10, help="số frame trong một cửa sổ giám sát")
     p.add_argument("--n-boot", type=int, default=2000, help="số cửa sổ bootstrap")
     p.set_defaults(fn=cmd_timesync, data_root="data/nuscenes_mini_subset")
+
+    p = sub.add_parser("degrade", help="stress test: bỏ điểm, nhiễu, bớt beam; xem còn bắt được lệch yaw không")
+    common(p)
+    p.add_argument("--every", type=int, default=1)
+    p.add_argument("--yaw-deg", type=float, default=0.5, help="mức lệch yaw cần phát hiện")
+    p.add_argument("--window", type=int, default=10)
+    p.add_argument("--n-boot", type=int, default=2000)
+    p.set_defaults(fn=cmd_degrade)
 
     p = sub.add_parser("latency", help="đo thời gian tính score: p50/p95, bỏ lần chạy đầu")
     common(p, frame=True)

@@ -1,7 +1,7 @@
-dataset,frame_id,n_points,step,repeats,p50_ms,p95_ms,cpu,python
-nuscenes_mini_subset,scene-0103_000,34752,project_all_points,30,3.38,5.664,x86_64,3.10.12
-nuscenes_mini_subset,scene-0103_000,34752,inbox_ratio (cần label),30,0.563,0.982,x86_64,3.10.12
-nuscenes_mini_subset,scene-0103_000,34752,edge: depth_edge_weights,30,3.73,4.942,x86_64,3.10.12
-nuscenes_mini_subset,scene-0103_000,34752,edge: image_edge_map (Canny + distance transform),30,15.838,18.587,x86_64,3.10.12
-nuscenes_mini_subset,scene-0103_000,34752,edge: 1 lần chấm score,30,0.203,0.334,x86_64,3.10.12
-nuscenes_mini_subset,scene-0103_000,34752,edge_margin đầy đủ (7 lần chấm),30,3.33,4.914,x86_64,3.10.12
+dataset,frame_id,n_points,step,repeats,p50_ms,p95_ms,cpu,ram_gb,gpu,python
+nuscenes_mini_subset,scene-0103_000,34752,project_all_points,30,8.795,12.556,12th Gen Intel(R) Core(TM) i7-12650H,4.0,không dùng,3.10.12
+nuscenes_mini_subset,scene-0103_000,34752,inbox_ratio (cần label),30,1.113,1.697,12th Gen Intel(R) Core(TM) i7-12650H,4.0,không dùng,3.10.12
+nuscenes_mini_subset,scene-0103_000,34752,edge: depth_edge_weights,30,5.208,6.641,12th Gen Intel(R) Core(TM) i7-12650H,4.0,không dùng,3.10.12
+nuscenes_mini_subset,scene-0103_000,34752,edge: image_edge_map (Canny + distance transform),30,33.66,36.16,12th Gen Intel(R) Core(TM) i7-12650H,4.0,không dùng,3.10.12
+nuscenes_mini_subset,scene-0103_000,34752,edge: 1 lần chấm score,30,0.396,0.668,12th Gen Intel(R) Core(TM) i7-12650H,4.0,không dùng,3.10.12
+nuscenes_mini_subset,scene-0103_000,34752,edge_margin đầy đủ (7 lần chấm),30,4.069,5.787,12th Gen Intel(R) Core(TM) i7-12650H,4.0,không dùng,3.10.12

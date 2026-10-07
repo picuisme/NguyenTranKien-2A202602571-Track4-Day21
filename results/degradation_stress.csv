@@ -1,0 +1,12 @@
+dataset,degradation,param,level,yaw_deg,n_frames,n_objects_ge10pts,points_on_objects,inbox_pct_clean,inbox_pct_yaw,edge_margin_clean,edge_margin_yaw,detect_yaw_pct_inbox_ratio,detect_yaw_pct_edge_margin
+kitti_mini,random_dropout,keep_ratio,1.0,0.5,20,107,40156,99.5642,97.2009,0.0305,0.013,99.4,96.3
+kitti_mini,random_dropout,keep_ratio,0.7,0.5,20,105,28042,99.5792,97.2113,0.0284,0.0126,99.7,93.05
+kitti_mini,random_dropout,keep_ratio,0.5,0.5,20,102,20031,99.5856,97.3441,0.0275,0.011,99.05,98.05
+kitti_mini,random_dropout,keep_ratio,0.3,0.5,20,88,11905,99.5632,97.6396,0.0245,0.0104,94.65,96.8
+kitti_mini,gaussian_noise,sigma_xyz_m,0.0,0.5,20,107,40156,99.5642,97.2009,0.0305,0.013,99.4,96.3
+kitti_mini,gaussian_noise,sigma_xyz_m,0.02,0.5,20,106,39685,99.5615,97.1828,0.0294,0.0109,99.55,99.95
+kitti_mini,gaussian_noise,sigma_xyz_m,0.05,0.5,20,108,38367,99.4709,97.0626,0.0235,0.01,99.3,94.2
+kitti_mini,gaussian_noise,sigma_xyz_m,0.1,0.5,20,108,35683,99.3807,96.9537,0.0157,0.009,98.35,23.6
+kitti_mini,beam_dropout,keep_every,1.0,0.5,20,107,40156,99.5642,97.2009,0.0305,0.013,99.4,96.3
+kitti_mini,beam_dropout,keep_every,2.0,0.5,20,101,19410,99.5415,97.1664,0.027,0.0097,99.45,99.55
+kitti_mini,beam_dropout,keep_every,4.0,0.5,20,87,9889,99.5652,97.4214,0.0217,0.0059,99.45,52.55

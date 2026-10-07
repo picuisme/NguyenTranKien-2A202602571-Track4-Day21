@@ -1,0 +1,181 @@
+step,run,ms
+project_all_points,1,9.18
+project_all_points,2,8.746
+project_all_points,3,8.844
+project_all_points,4,6.278
+project_all_points,5,6.7
+project_all_points,6,9.565
+project_all_points,7,9.527
+project_all_points,8,8.693
+project_all_points,9,7.547
+project_all_points,10,12.636
+project_all_points,11,8.359
+project_all_points,12,9.076
+project_all_points,13,10.873
+project_all_points,14,10.801
+project_all_points,15,17.457
+project_all_points,16,11.021
+project_all_points,17,12.459
+project_all_points,18,9.773
+project_all_points,19,9.229
+project_all_points,20,8.587
+project_all_points,21,10.561
+project_all_points,22,8.377
+project_all_points,23,8.859
+project_all_points,24,7.462
+project_all_points,25,7.376
+project_all_points,26,6.847
+project_all_points,27,6.34
+project_all_points,28,6.406
+project_all_points,29,8.034
+project_all_points,30,7.046
+inbox_ratio (cần label),1,1.741
+inbox_ratio (cần label),2,1.108
+inbox_ratio (cần label),3,1.046
+inbox_ratio (cần label),4,1.25
+inbox_ratio (cần label),5,1.083
+inbox_ratio (cần label),6,1.238
+inbox_ratio (cần label),7,1.429
+inbox_ratio (cần label),8,0.942
+inbox_ratio (cần label),9,1.074
+inbox_ratio (cần label),10,1.01
+inbox_ratio (cần label),11,1.304
+inbox_ratio (cần label),12,2.005
+inbox_ratio (cần label),13,1.099
+inbox_ratio (cần label),14,1.062
+inbox_ratio (cần label),15,1.008
+inbox_ratio (cần label),16,1.294
+inbox_ratio (cần label),17,1.644
+inbox_ratio (cần label),18,1.272
+inbox_ratio (cần label),19,1.026
+inbox_ratio (cần label),20,0.93
+inbox_ratio (cần label),21,1.229
+inbox_ratio (cần label),22,1.196
+inbox_ratio (cần label),23,1.251
+inbox_ratio (cần label),24,1.188
+inbox_ratio (cần label),25,1.132
+inbox_ratio (cần label),26,0.857
+inbox_ratio (cần label),27,1.004
+inbox_ratio (cần label),28,1.01
+inbox_ratio (cần label),29,1.117
+inbox_ratio (cần label),30,1.102
+edge: depth_edge_weights,1,5.697
+edge: depth_edge_weights,2,5.092
+edge: depth_edge_weights,3,5.104
+edge: depth_edge_weights,4,5.562
+edge: depth_edge_weights,5,4.771
+edge: depth_edge_weights,6,4.25
+edge: depth_edge_weights,7,4.864
+edge: depth_edge_weights,8,5.307
+edge: depth_edge_weights,9,4.582
+edge: depth_edge_weights,10,5.036
+edge: depth_edge_weights,11,4.882
+edge: depth_edge_weights,12,3.954
+edge: depth_edge_weights,13,4.835
+edge: depth_edge_weights,14,5.069
+edge: depth_edge_weights,15,4.496
+edge: depth_edge_weights,16,5.062
+edge: depth_edge_weights,17,5.389
+edge: depth_edge_weights,18,5.414
+edge: depth_edge_weights,19,5.108
+edge: depth_edge_weights,20,6.584
+edge: depth_edge_weights,21,6.205
+edge: depth_edge_weights,22,5.595
+edge: depth_edge_weights,23,5.069
+edge: depth_edge_weights,24,5.847
+edge: depth_edge_weights,25,6.174
+edge: depth_edge_weights,26,5.835
+edge: depth_edge_weights,27,6.352
+edge: depth_edge_weights,28,6.688
+edge: depth_edge_weights,29,5.636
+edge: depth_edge_weights,30,6.987
+edge: image_edge_map (Canny + distance transform),1,28.291
+edge: image_edge_map (Canny + distance transform),2,25.751
+edge: image_edge_map (Canny + distance transform),3,28.405
+edge: image_edge_map (Canny + distance transform),4,33.663
+edge: image_edge_map (Canny + distance transform),5,35.515
+edge: image_edge_map (Canny + distance transform),6,35.092
+edge: image_edge_map (Canny + distance transform),7,32.722
+edge: image_edge_map (Canny + distance transform),8,37.916
+edge: image_edge_map (Canny + distance transform),9,35.275
+edge: image_edge_map (Canny + distance transform),10,34.29
+edge: image_edge_map (Canny + distance transform),11,32.993
+edge: image_edge_map (Canny + distance transform),12,32.887
+edge: image_edge_map (Canny + distance transform),13,34.128
+edge: image_edge_map (Canny + distance transform),14,34.043
+edge: image_edge_map (Canny + distance transform),15,32.298
+edge: image_edge_map (Canny + distance transform),16,33.635
+edge: image_edge_map (Canny + distance transform),17,35.413
+edge: image_edge_map (Canny + distance transform),18,31.761
+edge: image_edge_map (Canny + distance transform),19,34.328
+edge: image_edge_map (Canny + distance transform),20,34.436
+edge: image_edge_map (Canny + distance transform),21,32.659
+edge: image_edge_map (Canny + distance transform),22,32.59
+edge: image_edge_map (Canny + distance transform),23,33.657
+edge: image_edge_map (Canny + distance transform),24,34.59
+edge: image_edge_map (Canny + distance transform),25,36.689
+edge: image_edge_map (Canny + distance transform),26,31.066
+edge: image_edge_map (Canny + distance transform),27,34.043
+edge: image_edge_map (Canny + distance transform),28,32.828
+edge: image_edge_map (Canny + distance transform),29,34.596
+edge: image_edge_map (Canny + distance transform),30,31.661
+edge: 1 lần chấm score,1,0.49
+edge: 1 lần chấm score,2,0.384
+edge: 1 lần chấm score,3,0.351
+edge: 1 lần chấm score,4,0.358
+edge: 1 lần chấm score,5,0.405
+edge: 1 lần chấm score,6,0.35
+edge: 1 lần chấm score,7,0.396
+edge: 1 lần chấm score,8,0.401
+edge: 1 lần chấm score,9,0.572
+edge: 1 lần chấm score,10,0.68
+edge: 1 lần chấm score,11,0.773
+edge: 1 lần chấm score,12,0.653
+edge: 1 lần chấm score,13,0.649
+edge: 1 lần chấm score,14,0.293
+edge: 1 lần chấm score,15,0.242
+edge: 1 lần chấm score,16,0.312
+edge: 1 lần chấm score,17,0.325
+edge: 1 lần chấm score,18,0.314
+edge: 1 lần chấm score,19,0.307
+edge: 1 lần chấm score,20,0.338
+edge: 1 lần chấm score,21,0.311
+edge: 1 lần chấm score,22,0.295
+edge: 1 lần chấm score,23,0.465
+edge: 1 lần chấm score,24,0.424
+edge: 1 lần chấm score,25,0.457
+edge: 1 lần chấm score,26,0.397
+edge: 1 lần chấm score,27,0.387
+edge: 1 lần chấm score,28,0.434
+edge: 1 lần chấm score,29,0.503
+edge: 1 lần chấm score,30,0.448
+edge_margin đầy đủ (7 lần chấm),1,5.424
+edge_margin đầy đủ (7 lần chấm),2,4.449
+edge_margin đầy đủ (7 lần chấm),3,3.418
+edge_margin đầy đủ (7 lần chấm),4,3.753
+edge_margin đầy đủ (7 lần chấm),5,4.27
+edge_margin đầy đủ (7 lần chấm),6,3.903
+edge_margin đầy đủ (7 lần chấm),7,4.002
+edge_margin đầy đủ (7 lần chấm),8,5.472
+edge_margin đầy đủ (7 lần chấm),9,4.016
+edge_margin đầy đủ (7 lần chấm),10,4.066
+edge_margin đầy đủ (7 lần chấm),11,4.057
+edge_margin đầy đủ (7 lần chấm),12,5.444
+edge_margin đầy đủ (7 lần chấm),13,4.072
+edge_margin đầy đủ (7 lần chấm),14,4.401
+edge_margin đầy đủ (7 lần chấm),15,4.3
+edge_margin đầy đủ (7 lần chấm),16,4.974
+edge_margin đầy đủ (7 lần chấm),17,3.933
+edge_margin đầy đủ (7 lần chấm),18,3.336
+edge_margin đầy đủ (7 lần chấm),19,3.949
+edge_margin đầy đủ (7 lần chấm),20,3.262
+edge_margin đầy đủ (7 lần chấm),21,3.363
+edge_margin đầy đủ (7 lần chấm),22,4.357
+edge_margin đầy đủ (7 lần chấm),23,3.76
+edge_margin đầy đủ (7 lần chấm),24,4.381
+edge_margin đầy đủ (7 lần chấm),25,3.94
+edge_margin đầy đủ (7 lần chấm),26,4.285
+edge_margin đầy đủ (7 lần chấm),27,6.238
+edge_margin đầy đủ (7 lần chấm),28,4.076
+edge_margin đầy đủ (7 lần chấm),29,3.885
+edge_margin đầy đủ (7 lần chấm),30,6.046
