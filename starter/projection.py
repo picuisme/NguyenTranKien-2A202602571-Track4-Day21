@@ -32,7 +32,15 @@ def velo_to_cam(points_xyz: np.ndarray, calib: KittiCalib) -> np.ndarray:
       3. Trả về 3 cột đầu.
     Tự kiểm: một điểm velodyne (10, 0, 0) phải có z_cam ~ 10 (phía trước camera).
     """
-    raise NotImplementedError("TODO(CP2): cài đặt velo_to_cam")
+    pts = np.asarray(points_xyz, dtype=np.float64).reshape(-1, 3)
+    # 1. Toạ độ đồng nhất: thêm cột 1 để phép tịnh tiến nằm chung trong một phép nhân ma trận.
+    pts_h = np.hstack([pts, np.ones((len(pts), 1))])
+    # 2. Điểm đang là VECTOR HÀNG nên p_cam^T = p_velo^T · T^T (tương đương T · p_velo với vector cột).
+    #    T_cam_velo = R0_rect · Tr_velo_to_cam, tức là xoay/dịch sang camera 0 rồi mới rectify.
+    with np.errstate(invalid="ignore"):  # điểm NaN/Inf giữ nguyên là NaN, cam_to_image sẽ lọc
+        cam_h = pts_h @ calib.T_cam_velo.T
+    # 3. Bỏ cột đồng nhất (luôn bằng 1 vì hàng cuối của T là [0 0 0 1]).
+    return cam_h[:, :3]
 
 
 def cam_to_image(points_cam: np.ndarray, P2: np.ndarray, image_shape: tuple[int, ...],
@@ -52,7 +60,23 @@ def cam_to_image(points_cam: np.ndarray, P2: np.ndarray, image_shape: tuple[int,
       3. Chia cho s để có (u, v). Chỉ chia với điểm có depth > min_depth.
       4. Lọc theo kích thước ảnh image_shape[:2] = (H, W).
     """
-    raise NotImplementedError("TODO(CP2): cài đặt cam_to_image")
+    pts = np.asarray(points_cam, dtype=np.float64).reshape(-1, 3)
+    h_img, w_img = image_shape[:2]
+    # 1. Điểm NaN/Inf: đánh dấu không hợp lệ và thay tạm bằng 0 để phép nhân không sinh cảnh báo.
+    finite = np.isfinite(pts).all(axis=1)
+    safe = np.where(finite[:, None], pts, 0.0)
+    # 2. [s*u, s*v, s]^T = P2 · [x, y, z, 1]^T. Với P2 của KITTI, s = z_cam + P2[2, 3] (cỡ mm).
+    proj = np.hstack([safe, np.ones((len(safe), 1))]) @ P2.T
+    depth_all = safe[:, 2]
+    # 3. Chỉ chia cho s ở điểm nằm TRƯỚC camera. Điểm có z <= 0 nếu vẫn chia sẽ bị lật ngược lên ảnh.
+    front = finite & (depth_all > min_depth) & (proj[:, 2] > 0)
+    uv_all = np.full((len(pts), 2), np.nan)
+    uv_all[front] = proj[front, :2] / proj[front, 2:3]
+    # 4. Giữ điểm rơi trong khung ảnh: 0 <= u < W và 0 <= v < H.
+    with np.errstate(invalid="ignore"):
+        inside = (uv_all[:, 0] >= 0) & (uv_all[:, 0] < w_img) & (uv_all[:, 1] >= 0) & (uv_all[:, 1] < h_img)
+    mask = front & inside
+    return uv_all[mask], depth_all[mask], mask
 
 
 def project_velo_to_image(points: np.ndarray, calib: KittiCalib, image_shape: tuple[int, ...]):
